@@ -4,12 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Dashboard</title>
-        <link rel="stylesheet" href="/static/css/output.css" />
+        <link href="{{ url_for('static', path='css/output.css') }}" rel="stylesheet" />
     </head>
 
     <body class="bg-gray-100 min-h-screen p-8">
         <h1 class="text-3xl font-bold text-center pt-20 mb-10">Choose a Skill to Begin Interview</h1>
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {% for skill in skills %}
             <form action="/interview/{{ skill }}" method="get">

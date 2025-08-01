@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Mock Interview - {{ skill }}</title>
-        <link rel="stylesheet" href="/static/css/output.css" />
+        <link href="{{ url_for('static', path='css/output.css') }}" rel="stylesheet" />
     </head>
     <body class="bg-gray-100 min-h-screen p-8">
         {% if not complete %}
@@ -150,7 +150,7 @@
                         // Stop camera
                         stream.getTracks().forEach((track) => track.stop());
                         video.srcObject = null;
-                    }, 1500); 
+                    }, 1500);
                 } catch (err) {
                     console.error("Webcam error:", err);
                     alert("⚠️ Could not access webcam.");
