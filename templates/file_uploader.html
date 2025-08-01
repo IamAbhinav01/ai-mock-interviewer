@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>File Uploader</title>
+        <link rel="stylesheet" href="/static/css/output.css" />
+    </head>
+    <body class="bg-white flex justify-center items-center min-h-screen">
+        <div class="bg-white rounded-lg p-10 shadow-lg max-w-sm w-full">
+            <h2 class="text-center text-4xl font-bold mb-7">Upload Resume</h2>
+            <form action="/dashboard" method="post" enctype="multipart/form-data">
+                <div class="mb-2">
+                    <input type="file" id="resume" name="resume" class="hidden" onchange="updateFileName()" />
+                    <label
+                        for="resume"
+                        class="flex justify-between items-center border border-gray-600 rounded-sm p-4 w-full cursor-pointer text-gray-700"
+                    >
+                        <span id="file-label">Choose a file</span>
+                        <span class="bg-gray-200 px-3 py-1 rounded text-sm font-medium">Browse</span>
+                    </label>
+                </div>
+                <p id="file-selected" class="text-sm text-gray-600 mb-6 text-center italic"></p>
+                <button
+                    class="bg-blue-600 font-bold text-white py-2 rounded hover:bg-blue-700 transition w-full cursor-pointer"
+                    type="submit"
+                >
+                    Upload
+                </button>
+            </form>
+        </div>
+
+        <script>
+            function updateFileName() {
+                const input = document.getElementById("resume");
+                const fileLabel = document.getElementById("file-label");
+                const fileSelected = document.getElementById("file-selected");
+                if (input.files.length > 0) {
+                    fileLabel.textContent = input.files[0].name;
+                    fileSelected.textContent = "✅ File selected: " + input.files[0].name;
+                } else {
+                    fileLabel.textContent = "Choose a file";
+                    fileSelected.textContent = "";
+                }
+            }
+        </script>
+    </body>
+</html>
