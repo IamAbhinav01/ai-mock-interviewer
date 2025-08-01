@@ -21,10 +21,15 @@ pipeline {
 
         stage('Build TailwindCSS') {
             steps {
-                sh """
-                npm install
-                npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify
-                """
+                script {
+                    echo 'Building Tailwind CSS...'
+                    sh '''
+                        docker run --rm -v $PWD:/app -w /app node:18-alpine sh -c "
+                          npm install -D tailwindcss &&
+                          npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify
+                        "
+                    '''
+                }
             }
         }
 
