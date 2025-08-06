@@ -11,6 +11,18 @@ Transform your interview preparation with our cutting-edge AI system that automa
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 [![License](https://img.shields.io/badge/License-ISC-green.svg)](LICENSE)
 
+---
+
+## ✨ New Features in This Version
+
+- 🎨 **Sleek New UI Design:** Modern, responsive, and user-friendly interface powered by Tailwind CSS
+- 🚀 **Improved Performance:** Optimized backend and frontend for faster load times and smoother interactions
+- 🧠 **Enhanced AI Feedback:** More detailed and actionable interview feedback powered by Mistral AI
+- 🔄 **Seamless Interview Flow:** Intuitive navigation and progress tracking for a better user experience
+- 🛠️ **Robust Error Handling:** Improved stability and error messages for smoother usage
+
+---
+
 ## 🎯 What Makes This Special?
 
 This isn't just another interview practice tool. Our AI Mock Interviewer leverages advanced language models to:
@@ -19,6 +31,8 @@ This isn't just another interview practice tool. Our AI Mock Interviewer leverag
 - **🧠 Generate senior-level questions** that test deep understanding, not just surface knowledge
 - **⚡ Provide instant, constructive feedback** that actually helps you improve
 - **🎯 Focus on real-world scenarios** that mirror actual technical interviews
+
+---
 
 ## 🚀 Lightning-Fast Deployment
 
@@ -85,6 +99,8 @@ For developers who want to customize and contribute:
 
 </details>
 
+---
+
 ## ✨ Core Features
 
 ### 🎯 **Intelligent Resume Analysis**
@@ -106,6 +122,9 @@ For developers who want to customize and contribute:
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Intuitive UX**: Clean, professional interface with smooth navigation
 - **Progress Tracking**: Visual indicators showing interview progress
+- **Integrated Code Editor**: Interactive Monaco code editor for coding questions with real-time execution and output display
+
+---
 
 ## 📋 How It Works
 
@@ -120,6 +139,8 @@ Answer 5 challenging questions per skill with real-time AI feedback.
 
 ### 4. **Level Up** 📈
 Review detailed feedback highlighting your strengths and areas for improvement.
+
+---
 
 ## 🏗️ Architecture Overview
 
@@ -141,6 +162,8 @@ ai-mock-interviewer/
 └── requirements.txt         # Python dependencies
 ```
 
+---
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -156,6 +179,8 @@ MISTRAL_API_KEY=your_mistral_api_key_here
 | `/interview/{skill}` | GET | Start interview for specific skill |
 | `/interview/{skill}` | POST | Submit answer and get feedback |
 
+---
+
 ## 🛠️ Technology Stack
 
 | Component | Technology | Purpose |
@@ -167,6 +192,8 @@ MISTRAL_API_KEY=your_mistral_api_key_here
 | **Template Engine** | Jinja2 | Dynamic HTML generation |
 | **Development** | Uvicorn | ASGI server |
 | **Containerization** | Docker | Easy deployment |
+
+---
 
 ## 🚀 Deployment Options
 
@@ -195,6 +222,8 @@ services:
     restart: unless-stopped
 ```
 
+---
+
 ## 🤝 Contributing
 
 We love contributions! Here's how you can help:
@@ -216,6 +245,8 @@ Have an idea? We'd love to hear it! Open an issue and let's discuss.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+---
+
 ## 📊 Project Stats
 
 ![GitHub stars](https://img.shields.io/github/stars/IamAbhinav01/ai-mock-interviewer)
@@ -223,9 +254,13 @@ Have an idea? We'd love to hear it! Open an issue and let's discuss.
 ![GitHub issues](https://img.shields.io/github/issues/IamAbhinav01/ai-mock-interviewer)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/IamAbhinav01/ai-mock-interviewer)
 
+---
+
 ## 📝 License
 
 This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 🙏 Acknowledgments
 
@@ -234,6 +269,8 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 - **Tailwind CSS** for the beautiful styling system
 - **LangChain** for seamless LLM integration
 - **Docker** for containerization support
+
+---
 
 ## 📞 Support & Community
 

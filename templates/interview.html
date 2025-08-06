@@ -4,11 +4,22 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Mock Interview - {{ skill }}</title>
-        <link href="{{ url_for('static', path='css/output.css') }}" rel="stylesheet" />
+        <link href="/static/css/output.css" rel="stylesheet" />
+
+        <style>
+            #output {
+                white-space: pre-wrap;
+                background-color: #f3f4f6;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                font-family: monospace;
+                font-size: 0.9rem;
+            }
+        </style>
     </head>
     <body class="bg-gray-100 min-h-screen p-8">
         {% if not complete %}
-        <div id="interview-section" class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
             <h1 class="text-3xl font-bold mb-6 text-center">Interview: {{ skill }}</h1>
 
             <!-- Question -->
@@ -18,12 +29,36 @@
             </div>
 
             <!-- Form -->
-            <form method="post" action="/interview/{{ skill }}">
+            <form method="post" action="/interview/{{ skill }}" onsubmit="submitCode(); return true;">
                 <input type="hidden" name="index" value="{{ index | default(0) }}" />
-                <div class="mb-4">
+                <input type="hidden" name="answer" id="hidden-answer" />
+
+                <!-- Conditional Code Editor -->
+                <div id="code-editor-section" class="mb-4 hidden">
+                    <label class="block font-medium mb-1">Your Code:</label>
+                    <div id="monaco-editor" style="height: 300px; border: 1px solid #ccc"></div>
+
+                    <div class="mt-4">
+                        <label class="block font-medium mb-1">Output:</label>
+                        <div id="output" class="min-h-[100px] border border-gray-300"></div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button
+                            type="button"
+                            onclick="runCode()"
+                            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        >
+                            ▶️ Run Code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fallback Textarea -->
+                <div class="mb-4" id="text-answer-section">
                     <label class="block font-medium mb-1" for="answer">Your Answer</label>
                     <textarea
-                        name="answer"
+                        name="text-answer"
                         id="answer"
                         rows="4"
                         class="w-full border border-gray-400 p-3 rounded resize-none"
@@ -49,14 +84,12 @@
                             📸 Take Snapshot
                         </button>
                     </div>
-                    <div class="flex gap-4">
-                        <button
-                            type="submit"
-                            class="bg-blue-600 text-white font-semibold py-2 px-6 rounded hover:bg-blue-700"
-                        >
-                            {{ 'Finish' if (index | default(0)) + 1 == total else 'Next' }}
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        class="bg-blue-600 text-white font-semibold py-2 px-6 rounded hover:bg-blue-700"
+                    >
+                        {{ 'Finish' if (index | default(0)) + 1 == total else 'Next' }}
+                    </button>
                 </div>
             </form>
 
@@ -67,7 +100,6 @@
             </div>
             {% endif %}
         </div>
-
         {% else %}
         <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow text-center">
             <h2 class="text-3xl font-bold mb-4 text-green-700">🎉 Interview Completed</h2>
@@ -86,21 +118,64 @@
         </div>
         {% endif %}
 
-        <!-- Webcam container -->
-        <div id="webcam-container" class="fixed bottom-4 right-4 w-64 h-48 hidden z-50">
-            <video id="webcam" autoplay muted playsinline class="w-full h-full object-cover rounded shadow"></video>
-            <canvas id="snapshot-canvas" class="hidden mt-2"></canvas>
-        </div>
-
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
         <script>
-            // Speech Recognition (Web Speech API)
+            // Dynamically detect coding question
+            const question = document.getElementById("question-text").innerText.toLowerCase();
+            const isCoding =
+                question.includes("code") || question.includes("function") || question.includes("algorithm");
+
+            if (isCoding) {
+                document.getElementById("code-editor-section").classList.remove("hidden");
+                document.getElementById("text-answer-section").classList.add("hidden");
+            }
+
+            // Monaco loader
+            require.config({paths: {vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs"}});
+            let editor;
+            require(["vs/editor/editor.main"], function () {
+                editor = monaco.editor.create(document.getElementById("monaco-editor"), {
+                    value: "# Write your code here\n",
+                    language: "python",
+                    theme: "vs-dark",
+                    automaticLayout: true,
+                });
+            });
+
+            async function runCode() {
+                const code = editor.getValue();
+                const outputEl = document.getElementById("output");
+
+                outputEl.innerText = "⏳ Running...";
+
+                const response = await fetch("/run-python", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({code}),
+                });
+
+                const result = await response.json();
+                outputEl.innerText = result.output || "No output";
+            }
+
+            function submitCode() {
+                if (editor) {
+                    document.getElementById("hidden-answer").value = editor.getValue();
+                } else {
+                    document.getElementById("hidden-answer").value = document.getElementById("answer").value;
+                }
+            }
+
+            // Speech Recognition
             function setupSpeechRecognition() {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SpeechRecognition) {
                     alert("⚠️ Your browser does not support speech recognition.");
                     return null;
                 }
-
                 const recog = new SpeechRecognition();
                 recog.lang = "en-US";
                 recog.interimResults = false;
@@ -111,48 +186,33 @@
             function startSpeechToText() {
                 const recognition = setupSpeechRecognition();
                 if (!recognition) return;
-
-                recognition.onstart = () => {
-                    alert("🎤 Speak now...");
-                };
-
-                recognition.onerror = (event) => {
-                    alert("❌ Error: " + event.error);
-                };
-
+                recognition.onstart = () => alert("🎤 Speak now...");
+                recognition.onerror = (event) => alert("❌ Error: " + event.error);
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
                     document.getElementById("answer").value = transcript;
-                    console.log("Transcript:", transcript);
                 };
-
                 recognition.start();
             }
 
             // Webcam Snapshot
             async function startWebcam() {
-                const webcamContainer = document.getElementById("webcam-container");
                 const video = document.getElementById("webcam");
                 const canvas = document.getElementById("snapshot-canvas");
-
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({video: true});
                     video.srcObject = stream;
-                    webcamContainer.classList.remove("hidden");
-
+                    document.getElementById("webcam-container").classList.remove("hidden");
                     setTimeout(() => {
                         const ctx = canvas.getContext("2d");
                         canvas.width = video.videoWidth;
                         canvas.height = video.videoHeight;
                         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                         canvas.classList.remove("hidden");
-
-                        // Stop camera
                         stream.getTracks().forEach((track) => track.stop());
                         video.srcObject = null;
                     }, 1500);
                 } catch (err) {
-                    console.error("Webcam error:", err);
                     alert("⚠️ Could not access webcam.");
                 }
             }
