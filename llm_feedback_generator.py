@@ -1,19 +1,13 @@
 import os
-from langchain_mistralai.chat_models import ChatMistralAI
-from langchain_core.messages import HumanMessage,SystemMessage
 from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+
 load_dotenv()
+os.environ["MISTRAL_API_KEY"] = os.getenv("MISTRAL_API_KEY")
 
-api_key = os.getenv("MISTRAL_API_KEY")
-
-llm = ChatMistralAI(
-    api_key=api_key,
-    model="mistral-small",
-    temperature=0.3
-)
 def evaluate_answer(question: str, answer: str, skill: str) -> str:
     prompt = f"""
-            You are a senior technical interviewer with deep expertise in {skill}. 
+You are a senior technical interviewer with deep expertise in {skill}. 
 
 Your task is to evaluate a candidate's answer to a technical interview question.
 
@@ -30,11 +24,16 @@ Question:
 Candidate's Answer:
 \"\"\"{answer}\"\"\"
 
-            Your feedback (max 2 sentences):
-            """
-    messages = [
-        {"role": "user", "content": prompt}
-    ]
+Your feedback (max 2 sentences):
+"""
+
+    llm = init_chat_model(
+        model="mistral-small",
+        model_provider="mistralai",
+        temperature=0.3,
+    )
+
+    messages = [{"role": "user", "content": prompt}]
 
     try:
         response = llm.invoke(messages)

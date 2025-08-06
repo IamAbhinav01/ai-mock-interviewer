@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, UploadFile, Form,status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List
@@ -7,16 +7,18 @@ from llm_parser import extract_skills_from_resume
 from llm_question_generator import generate_questions
 from llm_feedback_generator import evaluate_answer
 
+import subprocess
+import tempfile
+from collections import defaultdict
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-from collections import defaultdict
 user_sessions = defaultdict(dict)
 
-@app.get("/")
-async def show_uploader(request: Request):
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
     return templates.TemplateResponse("file_uploader.html", {"request": request})
 
 @app.post("/dashboard")
@@ -53,10 +55,7 @@ async def handle_answer(request: Request, skill: str, index: int = Form(...), an
     questions = user_sessions[skill]["questions"]
     user_sessions[skill]["answers"].append(answer)
 
-    # Get current question
     question = questions[index]
-    
-    # Call LLM to evaluate answer
     feedback = evaluate_answer(question, answer, skill)
 
     next_index = index + 1
@@ -77,3 +76,25 @@ async def handle_answer(request: Request, skill: str, index: int = Form(...), an
         "complete": False,
         "feedback": feedback
     })
+
+# ----------------- ✅ Run Code Endpoint -----------------
+@app.post("/run-python")
+async def run_python_code(request: Request):
+    data = await request.json()
+    code = data.get("code", "")
+    
+    try:
+        with tempfile.NamedTemporaryFile(mode='w+', suffix=".py", delete=False) as temp_file:
+            temp_file.write(code)
+            temp_file.flush()
+            result = subprocess.run(
+                ["python", temp_file.name],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+        output = result.stdout or result.stderr
+    except Exception as e:
+        output = str(e)
+
+    return JSONResponse({"output": output})

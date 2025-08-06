@@ -6,31 +6,33 @@ from langchain.chat_models import init_chat_model
 load_dotenv()
 os.environ["MISTRAL_API_KEY"] = os.getenv("MISTRAL_API_KEY")
 
-def generate_questions(skill: str) -> list:
+def generate_questions(skill: str, language: str = "Python") -> list:
     prompt = f"""
-You are a highly experienced senior technical interviewer. Your task is to generate 5 unique, challenging, and highly relevant technical interview questions for the skill: **{skill}**.
+You are a highly experienced senior technical interviewer.
 
-Each question should test deep understanding, practical knowledge, and problem-solving ability related to the skill. Avoid generic or trivial questions.
+Your task:
+- Generate **5 unique, relevant, and non-trivial interview questions** for a candidate skilled in **{skill}**.
+- Out of the 5, include **at least 2 coding questions** that must be solved in **{language}**.
+- The remaining questions should test deep understanding, real-world problem solving, or architecture-related knowledge.
+- Avoid generic or overly basic questions.
 
-Format your response strictly as a valid Python list of strings, for example:
+**Output Format (must be a valid Python list of dicts like below)**:
 [
-    "Explain the concept of X and how it applies in real-world scenarios.",
-    "Describe how you would solve Y problem using {skill}.",
+    {{"type": "coding", "question": "Write a function in {language} to reverse a linked list."}},
+    {{"type": "theory", "question": "Explain how garbage collection works in {skill}."}},
     ...
 ]
 
-Do not include any explanations or additional text, only the list of questions.
+Do not include explanations. Only return the valid JSON-like Python list of question dictionaries.
 """
 
     llm = init_chat_model(
-        model="mistral-small",  
+        model="mistral-small",
         model_provider="mistralai",
         temperature=0.7,
     )
 
-    messages = [
-        {"role": "user", "content": prompt}
-    ]
+    messages = [{"role": "user", "content": prompt}]
 
     try:
         response = llm.invoke(messages)
@@ -40,4 +42,5 @@ Do not include any explanations or additional text, only the list of questions.
             return questions
     except Exception as e:
         print("❌ LLM error:", e)
+
     return []
