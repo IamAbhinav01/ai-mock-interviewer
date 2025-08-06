@@ -1,4 +1,4 @@
-# --- Stage 1: Tailwind Build ---
+# --- Stage 1: Tailwind Build --- build 
 FROM node:20-slim AS tailwind-builder
 
 WORKDIR /app
